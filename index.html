@@ -353,20 +353,28 @@
             // Deutsche Sprache zwingen
             currentUtterance.lang = 'de-DE';
             
-            // Lade Stimmen (muss asynchron passieren, daher greifen wir auf den aktuellen Stand zu)
+            // Lade Stimmen
             const voices = synth.getVoices();
             if (voices.length > 0) {
-                // Suche nach einer schönen deutschen Stimme (bevorzuge Google, da diese natürlicher klingen)
-                const germanVoice = voices.find(voice => voice.lang.includes('de') && voice.name.includes('Google')) || 
-                                    voices.find(voice => voice.lang.includes('de'));
-                if(germanVoice) {
-                    currentUtterance.voice = germanVoice;
+                // Suche gezielt nach Premium/Cloud-Stimmen für maximal menschlichen Klang!
+                const premiumVoice = 
+                    voices.find(v => v.name.includes('Google Deutsch')) ||       // Chrome (Sehr natürlich)
+                    voices.find(v => v.name.includes('Katja Online')) ||         // Edge/Windows (Sehr natürlich)
+                    voices.find(v => v.name.includes('Conrad Online')) ||        // Edge/Windows (Sehr natürlich)
+                    voices.find(v => v.name.includes('Anna')) ||                 // macOS/iOS (Apple Standard)
+                    voices.find(v => v.name.includes('Helena')) ||               // Windows Standard
+                    voices.find(v => v.lang.includes('de-DE')) ||                // Irgendeine deutsche Stimme
+                    voices.find(v => v.lang.includes('de'));                     // Fallback
+                
+                if(premiumVoice) {
+                    currentUtterance.voice = premiumVoice;
+                    console.log("Ausgewählte Stimme: ", premiumVoice.name);
                 }
             }
             
-            // Sprechtempo und Tonhöhe moderat anpassen
-            currentUtterance.rate = 1.05; 
-            currentUtterance.pitch = 1.1;
+            // Tonhöhe und Geschwindigkeit auf 1.0 zurücksetzen für einen ruhigeren, natürlicheren Klang
+            currentUtterance.rate = 1.0; 
+            currentUtterance.pitch = 1.0;
 
             // Events für UI-Updates
             currentUtterance.onstart = () => {
