@@ -294,11 +294,11 @@
             document.getElementById('yt-fallback').style.display = 'flex';
         }
 
-        // --- TTS (Gemini API) Logic ---
+        // --- Web Speech API (Lokales TTS) Logic ---
         const ttsBtn = document.getElementById('btn-tts');
         const ttsLabel = document.getElementById('tts-label');
-        let currentAudio = null;
         let isPlaying = false;
+        const synth = window.speechSynthesis;
 
         // Jugendsprachliche Texte für jede Slide (angepasst auf das Piraten-Thema)
         const ttsTexts = [
@@ -313,48 +313,6 @@
             "Mission accomplished! Boom! So easy habt ihr die wichtigsten Infos aus dem Video gefiltert, ohne den Faden zu verlieren. Ihr seid jetzt offiziell zertifizierte Video-Detektive. Probiert das beim nächsten Mal direkt auf eurem Block aus. Viel Erfolg!"
         ];
 
-        // Hilfsfunktionen für die Audio-Konvertierung (PCM zu WAV)
-        function base64ToArrayBuffer(base64) {
-            const binaryString = window.atob(base64);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-
-        function pcmToWav(pcm16, sampleRate) {
-            const numChannels = 1;
-            const byteRate = sampleRate * numChannels * 2;
-            const blockAlign = numChannels * 2;
-            const buffer = new ArrayBuffer(44 + pcm16.byteLength);
-            const view = new DataView(buffer);
-
-            const writeString = (view, offset, string) => {
-                for (let i = 0; i < string.length; i++) { view.setUint8(offset + i, string.charCodeAt(i)); }
-            };
-
-            writeString(view, 0, 'RIFF');
-            view.setUint32(4, 36 + pcm16.byteLength, true);
-            writeString(view, 8, 'WAVE');
-            writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true); // Format PCM
-            view.setUint16(22, numChannels, true);
-            view.setUint32(24, sampleRate, true);
-            view.setUint32(28, byteRate, true);
-            view.setUint16(32, blockAlign, true);
-            view.setUint16(34, 16, true); // Bits per sample
-            writeString(view, 36, 'data');
-            view.setUint32(40, pcm16.byteLength, true);
-
-            let offset = 44;
-            for (let i = 0; i < pcm16.length; i++, offset += 2) {
-                view.setInt16(offset, pcm16[i], true);
-            }
-            return new Blob([view], { type: 'audio/wav' });
-        }
-
         function resetTTSButton() {
             isPlaying = false;
             ttsLabel.innerText = "Vorlesen lassen";
@@ -362,79 +320,64 @@
             ttsBtn.classList.add('bg-blue-600', 'hover:bg-blue-500', 'shadow-blue-500/30');
         }
 
-        async function playTTS() {
-            if (isPlaying && currentAudio) {
-                currentAudio.pause();
+        function playTTS() {
+            // Wenn bereits gesprochen wird, abbrechen
+            if (synth.speaking) {
+                synth.cancel();
                 resetTTSButton();
                 return;
             }
 
             const textToSpeak = ttsTexts[currentSlide];
-            const apiKey = ""; // API Key wird vom Canvas automatisch injiziert
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
             
-            const payload = {
-                contents: [{ parts: [{ text: textToSpeak }] }],
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        voiceConfig: {
-                            // "Leda" ist die perfekte jugendliche Stimme
-                            prebuiltVoiceConfig: { voiceName: "Leda" } 
-                        }
-                    }
-                }
+            // Neues Sprach-Objekt erstellen
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            
+            // Deutsche Sprache einstellen
+            utterance.lang = 'de-DE';
+            
+            // Versuchen, eine angenehme Stimme zu finden (optional, Browser entscheidet oft selbst gut)
+            const voices = synth.getVoices();
+            const germanVoice = voices.find(voice => voice.lang.includes('de') && voice.name.includes('Google')) || voices.find(voice => voice.lang.includes('de'));
+            if(germanVoice) {
+                utterance.voice = germanVoice;
+            }
+            
+            // Sprechtempo und Tonhöhe leicht anpassen, damit es jugendlicher/dynamischer klingt
+            utterance.rate = 1.1; 
+            utterance.pitch = 1.2;
+
+            // Events für UI-Updates
+            utterance.onstart = () => {
+                isPlaying = true;
+                ttsBtn.disabled = false;
+                ttsLabel.innerText = "Audio stoppen 🛑";
+                ttsBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500', 'shadow-blue-500/30');
+                ttsBtn.classList.add('bg-red-500', 'hover:bg-red-400', 'shadow-red-500/30');
             };
 
-            try {
-                // Lade-State UI
-                ttsLabel.innerHTML = '<span class="animate-pulse">Generiere Audio... ⏳</span>';
-                ttsBtn.disabled = true;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                const audioBase64 = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-
-                if(audioBase64) {
-                    const pcmData = base64ToArrayBuffer(audioBase64);
-                    const pcm16 = new Int16Array(pcmData);
-                    const wavBlob = pcmToWav(pcm16, 24000); // 24kHz Sample Rate
-                    const audioUrl = URL.createObjectURL(wavBlob);
-
-                    if(currentAudio) currentAudio.pause();
-                    currentAudio = new Audio(audioUrl);
-                    
-                    currentAudio.play();
-                    isPlaying = true;
-                    
-                    // Stop-State UI
-                    ttsBtn.disabled = false;
-                    ttsLabel.innerText = "Audio stoppen 🛑";
-                    ttsBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500', 'shadow-blue-500/30');
-                    ttsBtn.classList.add('bg-red-500', 'hover:bg-red-400', 'shadow-red-500/30');
-                    
-                    currentAudio.onended = () => {
-                        resetTTSButton();
-                    };
-                } else {
-                    throw new Error("Keine Audiodaten erhalten.");
-                }
-            } catch (error) {
-                console.error("TTS Error:", error);
-                // Stilvoller Error-State (kein alert)
+            utterance.onend = () => {
+                resetTTSButton();
+            };
+            
+            utterance.onerror = (e) => {
+                console.error("Speech Synthesis Error:", e);
+                resetTTSButton();
+                // Kurze Fehlermeldung auf dem Button
                 ttsLabel.innerText = "Fehler aufgetreten ❌";
-                setTimeout(resetTTSButton, 3000);
-            } finally {
-                ttsBtn.disabled = false;
-            }
+                setTimeout(resetTTSButton, 2000);
+            };
+
+            // Vorlesen starten
+            synth.speak(utterance);
         }
 
         ttsBtn.addEventListener('click', playTTS);
+
+        // Um sicherzugehen, dass Stimmen geladen sind (oft ein Problem bei Chrome)
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+          speechSynthesis.onvoiceschanged = synth.getVoices;
+        }
 
         // Init initial state
         updateUI();
