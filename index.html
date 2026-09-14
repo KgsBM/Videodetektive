@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die Video-Detektiv-Methode 🕵️‍♂️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+        }
+        
+        .font-handwriting {
+            font-family: 'Handlee', cursive;
+        }
+
+        /* Slide Container und sicheres Scrolling */
+        .slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            height: 100%;
+            overflow-y: auto; /* Erlaubt scrollen, wenn Inhalt zu groß ist */
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            animation: fadeIn 0.5s forwards;
+        }
+        
+        /* Innerer Wrapper, der ein Abschneiden am oberen Rand verhindert */
+        .slide-content {
+            width: 100%;
+            max-width: 72rem; /* max-w-6xl */
+            margin: auto; /* Sicheres vertikales Zentrieren */
+            padding: 2rem 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title-marker {
+            position: relative;
+            display: inline-block;
+            z-index: 1;
+            padding: 0 4px;
+        }
+        
+        .title-marker::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            bottom: -2px;
+            left: -8px;
+            right: -8px;
+            background-color: #facc15; /* yellow-400 */
+            z-index: -1;
+            transform: rotate(-2deg);
+            border-radius: 6px;
+        }
+
+        /* Fotorealistischer Notizblock (Verbesserter Kontrast) */
+        .notebook-bg {
+            background-color: #fdfbf7;
+            background-image: linear-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 100% 2.5rem; /* Zeilenabstand anpassen */
+            background-position: 0 3.2rem; 
+            box-shadow: 2px 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .notebook-margin {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 15%;
+            width: 2px;
+            background-color: #f87171; /* red-400 */
+            opacity: 0.6;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col text-slate-100 overflow-hidden">
+
+    <!-- Top Bar mit Progress -->
+    <header class="w-full bg-slate-800 border-b border-slate-700 p-4 flex justify-between items-center shadow-md z-20 shrink-0">
+        <div class="font-black text-xl tracking-tight text-white flex items-center gap-2">
+            <span class="text-yellow-400 text-2xl">🕵️‍♂️</span> Video-Detektive
+        </div>
+        <div class="w-1/2 max-w-md bg-slate-700 h-3 rounded-full overflow-hidden">
+            <div id="progress-bar" class="bg-yellow-400 h-full w-0 transition-all duration-500 ease-out rounded-full"></div>
+        </div>
+    </header>
+
+    <!-- Main Content Area (Slider) -->
+    <main class="flex-1 relative bg-slate-900 p-4 md:p-8 overflow-hidden">
+        
+        <!-- Slide 0: Intro -->
+        <div class="slide active" id="slide-0">
+            <div class="slide-content text-center">
+                <div class="text-7xl mb-6 animate-bounce">🕵️‍♂️</div>
+                <h1 class="text-4xl md:text-6xl font-black mb-8 text-white tracking-tight leading-tight">Die <span class="title-marker text-slate-900">Video-Detektiv</span> Methode</h1>
+                <p class="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-8">
+                    Video gucken und danach null Plan haben, was wichtig war? <br>
+                    Einfach nur berieseln lassen bringt's halt nicht. Hier kommt dein ultimativer Hack für die Schule!
+                </p>
+                <div class="inline-block bg-slate-800 text-yellow-400 font-bold px-6 py-3 rounded-xl border border-slate-700 shadow-lg">
+                    Mission: Lerne, wie du Wissen aus Videos absaugst!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 1: Set-up -->
+        <div class="slide" id="slide-1">
+            <div class="slide-content">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-8"><span class="title-marker text-slate-900">Schritt 1: Das Set-up 📝</span></h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6 text-lg text-slate-300">
+                        <p>Bevor das Video startet: <strong class="text-yellow-400">Gehirn an, Blatt vorbereiten!</strong></p>
+                        <p>Faltet euer Blatt in der Mitte oder zieht einen Strich. Links kommen gleich eure "Blitz-Wörter" hin, rechts die "Ganzen Fakten".</p>
+                        <p>Und mega wichtig: Schreibt ganz oben eure Zielfrage hin! Wir nehmen heute den <strong class="text-white">Piraten-Check</strong>.</p>
+                        <div class="bg-slate-700 p-4 rounded-lg font-bold text-white border-l-4 border-yellow-400">
+                            Zielfrage: Wie lief ein echter Piratenangriff ab?
+                        </div>
+                    </div>
+                    
+                    <div class="notebook-bg text-slate-800 rounded-lg shadow-xl p-6 relative w-full aspect-square md:aspect-auto md:h-[400px] transform rotate-1">
+                        <div class="notebook-margin"></div>
+                        <h3 class="font-handwriting text-2xl font-bold mb-6 text-center border-b-2 border-slate-400 pb-2 text-slate-800">
+                            Zielfrage: Wie lief ein echter Piratenangriff ab?
+                        </h3>
+                        <div class="flex h-full pl-[15%]">
+                            <div class="w-1/2 pr-4 border-r-2 border-slate-400 border-dashed">
+                                <h4 class="font-sans text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Währenddessen (Blitz-Wörter)</h4>
+                                <p class="font-handwriting text-xl text-slate-500 mt-4 leading-[2.5rem]">(Hier kommen gleich nur Stichwörter hin...)</p>
+                            </div>
+                            <div class="w-1/2 pl-4">
+                                <h4 class="font-sans text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Direkt Danach (Ganze Fakten)</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Video Piraten -->
+        <div class="slide" id="slide-2">
+            <div class="slide-content text-center">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4"><span class="title-marker text-slate-900">Schritt 2: Play & Blitz-Notizen ⚡</span></h2>
+                <p class="text-lg text-slate-300 mb-8 max-w-4xl mx-auto">Jetzt gucken wir den Clip vom Piraten-Check. <strong class="text-red-400">Ganze Sätze mitschreiben ist streng verboten!</strong> Schreibt links nur krasse Stichwörter mit: Nomen, Zahlen, Fremdwörter.</p>
+                
+                <div class="w-full max-w-4xl mx-auto bg-slate-800 rounded-xl shadow-2xl p-2 border border-slate-700 aspect-video relative">
+                    <div id="yt-player-piraten" class="w-full h-full rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Blitz-Stopp Piraten -->
+        <div class="slide" id="slide-3">
+            <div class="slide-content">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-8"><span class="title-marker text-slate-900">Schritt 3: Der Blitz-Stopp 🛑</span></h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6 text-lg text-slate-300">
+                        <p>Pause! Das Video ist angehalten. Jetzt müsst ihr schnell sein, bevor die Infos aus eurem Kopf gelöscht werden.</p>
+                        <p>Zieht rüber auf die rechte Seite und macht aus euren hingekritzelten Blitz-Wörtern <strong class="text-yellow-400">echte Sätze</strong>.</p>
+                        <p>Checkt mal hier rechts meine Musterlösung ab. Aus dem Wort "Enterhaken" macht ihr schnell eine kurze Erklärung. So ungefähr sollte das bei euch jetzt aussehen!</p>
+                    </div>
+                    
+                    <div class="notebook-bg text-slate-800 rounded-lg shadow-xl p-6 relative w-full aspect-square md:aspect-auto md:h-[450px] transform -rotate-1">
+                        <div class="notebook-margin"></div>
+                        <h3 class="font-handwriting text-2xl font-bold mb-4 text-center border-b-2 border-slate-400 pb-2 text-slate-900">
+                            Zielfrage: Wie lief ein Piratenangriff ab?
+                        </h3>
+                        <div class="flex h-full pl-[15%] mt-2">
+                            <div class="w-1/2 pr-4 border-r-2 border-slate-400 border-dashed">
+                                <h4 class="font-sans text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 bg-white/80 inline-block px-1">Blitz-Wörter</h4>
+                                <ul class="font-handwriting text-[22px] text-slate-800 space-y-0 leading-[2.5rem] font-bold mt-2">
+                                    <li>falsche Flagge</li>
+                                    <li>Kanonen</li>
+                                    <li>Enterhaken</li>
+                                    <li>Nahkampf</li>
+                                </ul>
+                            </div>
+                            <div class="w-1/2 pl-4">
+                                <h4 class="font-sans text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 bg-white/80 inline-block px-1">Ganze Fakten</h4>
+                                <ul class="font-handwriting text-[18px] text-slate-800 space-y-0 leading-[2.5rem] mt-2">
+                                    <li>-> so fielen sie nicht auf</li>
+                                    <li>-> zerschießen damit die Masten</li>
+                                    <li>-> ziehen Schiffe damit heran</li>
+                                    <li>-> springen rüber und erobern Schiff</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Freestyle-Modus (Waggons) -->
+        <div class="slide" id="slide-4">
+            <div class="slide-content">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-8"><span class="title-marker text-slate-900">Schritt 4: Der Freestyle-Modus 🚂</span></h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6 text-lg text-slate-300">
+                        <p>Was ist, wenn der Lehrer keine genaue Frage stellt oder das Video 15 Minuten lang ist? Kein Stress!</p>
+                        <p>Teile das Video einfach in Sequenzen ein. Stell dir vor, ein langes Video ist wie ein <strong class="text-yellow-400">Güterzug</strong>.</p>
+                        <div class="bg-slate-800 p-5 rounded-xl border-2 border-slate-600 shadow-inner">
+                            <ul class="space-y-4">
+                                <li class="flex items-center gap-3"><span class="text-2xl">👀</span> Schau den ersten "Waggon" (ca. 2-3 Minuten).</li>
+                                <li class="flex items-center gap-3"><span class="text-2xl">⏸️</span> Drück selbst auf Pause.</li>
+                                <li class="flex items-center gap-3"><span class="text-2xl">✍️</span> Mach deinen Blitz-Stopp (Notizen ausfüllen).</li>
+                                <li class="flex items-center gap-3"><span class="text-2xl">▶️</span> Erst dann startest du den nächsten Waggon!</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center bg-slate-800 rounded-xl p-8 border border-slate-700 min-h-[350px]">
+                        <div class="flex items-center w-full justify-center space-x-2">
+                            <div class="text-6xl">🚂</div>
+                            <div class="flex items-center space-x-2 overflow-hidden w-full">
+                                <div class="w-6 h-2 bg-slate-500 rounded"></div>
+                                <div class="flex flex-col items-center group">
+                                    <div class="w-16 h-12 bg-green-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg mb-3">▶️ 1</div>
+                                    <div class="bg-slate-700 px-3 py-1 rounded-md text-xs font-bold text-slate-300">Waggon 1</div>
+                                </div>
+                                <div class="w-6 h-2 bg-slate-500 rounded"></div>
+                                <div class="flex flex-col items-center group">
+                                    <div class="w-16 h-12 bg-yellow-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg mb-3">⏸️ 2</div>
+                                    <div class="bg-slate-700 px-3 py-1 rounded-md text-xs font-bold text-slate-300">Waggon 2</div>
+                                </div>
+                                <div class="w-6 h-2 bg-slate-500 rounded"></div>
+                                <div class="flex flex-col items-center group">
+                                    <div class="w-16 h-12 bg-blue-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg mb-3">▶️ 3</div>
+                                    <div class="bg-slate-700 px-3 py-1 rounded-md text-xs font-bold text-slate-300">Waggon 3</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Meister-Prüfung Römer -->
+        <div class="slide" id="slide-5">
+            <div class="slide-content">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-8"><span class="title-marker text-slate-900">Die Meister-Prüfung 🏆</span></h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6 text-lg text-slate-300">
+                        <p>Jetzt seid ihr dran! Hier ist ein 8-Minuten-Clip aus dem <strong class="text-yellow-400">Römer-Check</strong>.</p>
+                        <p>Wendet den Freestyle-Modus an: Guckt Waggon 1 (ca. 4 Minuten), drückt manuell Pause und macht euren Blitz-Stopp. Startet danach Waggon 2!</p>
+                        <div class="bg-slate-700 p-4 rounded-lg font-bold text-white text-xl border-l-4 border-yellow-400 shadow-lg">
+                            Auftrag: Erfasse den Alltag im alten Rom inhaltlich!
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-xl shadow-2xl p-2 border border-slate-700 aspect-video relative">
+                        <div id="yt-player-roemer" class="w-full h-full rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Musterlösung Römer -->
+        <div class="slide" id="slide-6">
+            <div class="slide-content">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-8"><span class="title-marker text-slate-900">Musterlösung: Römer-Check 📜</span></h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6 text-lg text-slate-300">
+                        <p>Puh, das war ganz schön viel Info! Habt ihr an den <strong class="text-yellow-400">Blitz-Stopp</strong> nach der Hälfte gedacht?</p>
+                        <p>Hier seht ihr meine Musterlösung. In der ersten Sequenz ging es um die römischen Hochhäuser (Insula) und Kleidung. In Waggon 2 ging es dann um die Schule und Wachstafeln.</p>
+                        <p>Vergleicht das mal mit eurem eigenen Block. Ziemlich cool, was ihr da alles herausgefiltert habt!</p>
+                    </div>
+                    
+                    <div class="notebook-bg text-slate-800 rounded-lg shadow-xl p-6 relative w-full aspect-square md:aspect-auto md:h-[500px] transform rotate-1">
+                        <div class="notebook-margin"></div>
+                        <h3 class="font-handwriting text-[22px] font-bold mb-4 text-center border-b-2 border-slate-400 pb-2 text-slate-900">
+                            Thema: Alltag im alten Rom
+                        </h3>
+                        <div class="flex h-full pl-[15%] mt-2">
+                            <div class="w-1/2 pr-4 border-r-2 border-slate-400 border-dashed">
+                                <h4 class="font-sans text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 bg-white/80 inline-block px-1">Waggon 1 (Wohnen)</h4>
+                                <ul class="font-handwriting text-[20px] text-slate-800 space-y-0 leading-[2.5rem] font-bold">
+                                    <li>Insula</li>
+                                    <li>Toga</li>
+                                    <li>Sklaven</li>
+                                </ul>
+                                <h4 class="font-sans text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-4 mb-2 bg-white/80 inline-block px-1">Waggon 2 (Schule)</h4>
+                                <ul class="font-handwriting text-[20px] text-slate-800 space-y-0 leading-[2.5rem] font-bold">
+                                    <li>Wachstafel</li>
+                                    <li>Latein</li>
+                                </ul>
+                            </div>
+                            <div class="w-1/2 pl-4">
+                                <h4 class="font-sans text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 bg-white/80 inline-block px-1">Ganze Sätze</h4>
+                                <ul class="font-handwriting text-[18px] text-slate-800 space-y-0 leading-[2.5rem]">
+                                    <li>-> Mietshaus, wie ein Hochhaus</li>
+                                    <li>-> langes Kleid für reiche Männer</li>
+                                    <li>-> mussten reiche Römer bedienen</li>
+                                    <li class="h-[2.5rem]"></li> <!-- Leerzeile -->
+                                    <li>-> schrieben darauf, kein Papier</li>
+                                    <li>-> war die Sprache der Römer</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Outro -->
+        <div class="slide" id="slide-7">
+            <div class="slide-content text-center">
+                <div class="text-7xl mb-6">🎉</div>
+                <h2 class="text-4xl md:text-5xl font-black mb-8 text-white tracking-tight">Mission accomplished!</h2>
+                <p class="text-xl md:text-2xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10">
+                    Boom! So easy habt ihr die wichtigsten Infos aus dem Video gefiltert, ohne den Faden zu verlieren.
+                </p>
+                <div class="inline-block bg-slate-800 text-yellow-400 font-bold px-8 py-4 rounded-2xl border-2 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)] text-xl">
+                    Du bist jetzt ein zertifizierter Video-Detektiv! 🕵️‍♀️
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Bar (Controls) -->
+    <footer class="w-full bg-slate-800 border-t border-slate-700 p-4 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.2)] z-20 shrink-0">
+        <button id="btn-prev" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
+            <span>←</span> Zurück
+        </button>
+        
+        <button id="btn-tts" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full transition-transform hover:scale-105 flex items-center gap-2 shadow-lg group">
+            <span class="text-xl group-hover:animate-pulse">🔊</span> <span id="tts-label">Vorlesen lassen</span>
+        </button>
+
+        <button id="btn-next" class="px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold rounded-lg transition-colors flex items-center gap-2">
+            Weiter <span>→</span>
+        </button>
+    </footer>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- --- JAVASCRIPT LOGIK (Sauber & Robust) --- -->
+    <script>
+        // 1. Variablen deklarieren
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const progressBar = document.getElementById('progress-bar');
+        const ttsBtn = document.getElementById('btn-tts');
+        const ttsLabel = document.getElementById('tts-label');
+
+        let playerPiraten = null;
+        let playerRoemer = null;
+
+        // Sprachausgabe Variablen
+        let synth = window.speechSynthesis;
+        let isPlaying = false;
+        let currentUtterance = null;
+
+        // Texte für die Slides
+        const ttsTexts = [
+            "Hey Leute! Kennt ihr das? Ihr guckt ein Video für die Schule, und am Ende habt ihr null Plan, was eigentlich wichtig war? Einfach nur berieseln lassen bringt's halt nicht. Aber chillt, dafür gibt's den ultimativen Hack: Die Video-Detektiv-Methode!",
+            "Schritt 1: Das Set-up. Bevor ihr das Video startet: Gehirn an, Blatt vorbereiten! Faltet euer Blatt in der Mitte. Links kommen gleich eure Blitz-Wörter hin, rechts die Ganzen Fakten. Und mega wichtig: Schreibt ganz oben eure Zielfrage hin! Unsere Mission heute im Piraten-Check: Wie lief ein echter Piratenangriff ab?",
+            "Schritt 2: Play und Blitz-Notizen. Jetzt gucken wir den Clip vom Piraten-Check. Ganze Sätze mitschreiben ist streng verboten! Schreibt links nur krasse Stichwörter mit: Nomen, Zahlen, Fremdwörter.",
+            "Schritt 3: Der Blitz-Stopp. Pause! Das Video ist angehalten. Jetzt müsst ihr schnell sein, bevor die Infos aus eurem Kopf gelöscht werden. Zieht rüber auf die rechte Seite und macht aus euren Blitz-Wörtern echte Sätze. Aus dem Wort Enterhaken macht ihr eine kurze Erklärung. Checkt mal hier auf dem Zettel meine Musterlösung ab. So ungefähr sollte das bei euch jetzt auch aussehen!",
+            "Schritt 4: Der Freestyle-Modus! Was ist, wenn der Lehrer keine genaue Frage stellt? Kein Stress! Teile das Video einfach in Sequenzen ein. Was ist eine Sequenz? Stell dir vor, ein langes Video ist wie ein Güterzug. Eine Sequenz ist einfach nur ein einzelner Waggon von diesem Zug, also ein kurzer Abschnitt von 2 bis 3 Minuten. Du schaust einen Waggon, machst den Blitz-Stopp für deine Notizen und startest erst danach den nächsten Waggon!",
+            "Die Meister-Prüfung! Jetzt seid ihr dran! Hier ist ein 8-Minuten-Clip aus dem Römer-Check. Wendet den Freestyle-Modus an: Guckt Waggon 1 über das Wohnen, macht euren Blitz-Stopp, und schaut dann den Rest über die Schule. Euer Auftrag lautet: Erfasst das Video über den Alltag im alten Rom inhaltlich! Viel Erfolg!",
+            "Fertig? Puh, das war viel Info! Hier seht ihr meine Musterlösung auf dem Notizblock. In der ersten Sequenz ging es um die Hochhäuser und Sklaven, in der zweiten um die Schule und Wachstafeln. Vergleicht das mal mit eurem eigenen Block. Ziemlich cool, oder?",
+            "Mission accomplished! Boom! So easy habt ihr die wichtigsten Infos aus dem Video gefiltert, ohne den Faden zu verlieren. Ihr seid jetzt offiziell zertifizierte Video-Detektive. Probiert das beim nächsten Mal direkt auf eurem Block aus. Viel Erfolg!"
+        ];
+
+        // 2. Audio-Funktionen (Web Speech API)
+        function stopAudioIfPlaying() {
+            if (synth && synth.speaking) {
+                synth.cancel();
+            }
+            isPlaying = false;
+            ttsLabel.innerText = "Vorlesen lassen";
+            ttsBtn.classList.remove('bg-red-500', 'hover:bg-red-400');
+            ttsBtn.classList.add('bg-blue-600', 'hover:bg-blue-500');
+        }
+
+        function playTTS(text) {
+            stopAudioIfPlaying();
+            
+            // Audio-Context erzwingen (hilft gegen Blockaden in Chrome/Safari)
+            if (synth.paused) synth.resume();
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = 'de-DE';
+            currentUtterance.rate = 1.0; 
+            currentUtterance.pitch = 1.0;
+            
+            // Beste Stimme suchen (Online-Stimmen bevorzugen für natürliche Sprache)
+            let voices = synth.getVoices();
+            let bestVoice = voices.find(v => v.lang.includes('de') && (v.name.includes('Online') || v.name.includes('Google') || v.name.includes('Katja')));
+            if (!bestVoice) bestVoice = voices.find(v => v.lang.includes('de'));
+            if (bestVoice) currentUtterance.voice = bestVoice;
+
+            currentUtterance.onend = stopAudioIfPlaying;
+            currentUtterance.onerror = stopAudioIfPlaying;
+
+            isPlaying = true;
+            ttsLabel.innerText = "Stopp";
+            ttsBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+            ttsBtn.classList.add('bg-red-500', 'hover:bg-red-400');
+            
+            synth.speak(currentUtterance);
+        }
+
+        function toggleTTS() {
+            if (isPlaying) {
+                stopAudioIfPlaying();
+            } else {
+                playTTS(ttsTexts[currentSlide]);
+            }
+        }
+
+        // 3. UI-Funktionen (Folienwechsel)
+        function updateUI() {
+            stopAudioIfPlaying();
+
+            slides.forEach((slide, index) => {
+                if(index === currentSlide) {
+                    slide.classList.add('active');
+                    // Scroll nach oben setzen, falls auf der Folie vorher gescrollt wurde
+                    slide.scrollTop = 0;
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Fortschrittsbalken
+            const progressPercentage = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            // Buttons
+            btnPrev.style.visibility = currentSlide === 0 ? 'hidden' : 'visible';
+            btnNext.innerHTML = currentSlide === totalSlides - 1 ? 'Neustart 🔄' : 'Weiter <span>→</span>';
+
+            // YouTube Videos pausieren, wenn Folie verlassen wird
+            if (playerPiraten && typeof playerPiraten.pauseVideo === 'function' && currentSlide !== 2) {
+                playerPiraten.pauseVideo();
+            }
+            if (playerRoemer && typeof playerRoemer.pauseVideo === 'function' && currentSlide !== 5) {
+                playerRoemer.pauseVideo();
+            }
+        }
+
+        // 4. YouTube API Setup
+        let hasPiratenStarted = false;
+        let hasRoemerStarted = false;
+
+        window.onYouTubeIframeAPIReady = function() {
+            // Video 1: Piraten-Check (Startet 13:10, Endet 16:10)
+            playerPiraten = new YT.Player('yt-player-piraten', {
+                videoId: 'Hlxv65rnl0E',
+                playerVars: {
+                    'playsinline': 1, 'controls': 1, 'rel': 0, 'showinfo': 0,
+                    'start': 790, 'end': 970 
+                },
+                events: {
+                    'onStateChange': function(event) {
+                        if (event.data === YT.PlayerState.PLAYING) {
+                            // Cookie-Blocker: Zwingt das Video beim allerersten Start auf die richtige Zeit
+                            if (!hasPiratenStarted) {
+                                hasPiratenStarted = true;
+                                if (Math.abs(playerPiraten.getCurrentTime() - 790) > 5) {
+                                    playerPiraten.seekTo(790);
+                                }
+                            }
+                            // Hard-Stop: Stoppt exakt bei der Endzeit
+                            if (window.piratenInterval) clearInterval(window.piratenInterval);
+                            window.piratenInterval = setInterval(function() {
+                                if (playerPiraten.getCurrentTime() >= 970) {
+                                    playerPiraten.pauseVideo();
+                                    clearInterval(window.piratenInterval);
+                                }
+                            }, 500);
+                        } else {
+                            if (window.piratenInterval) clearInterval(window.piratenInterval);
+                        }
+                    }
+                }
+            });
+
+            // Video 2: Römer-Check (Startet 02:19, Endet 10:33)
+            playerRoemer = new YT.Player('yt-player-roemer', {
+                videoId: '5rSlvCGk91w',
+                playerVars: {
+                    'playsinline': 1, 'controls': 1, 'rel': 0, 'showinfo': 0,
+                    'start': 139, 'end': 633 
+                },
+                events: {
+                    'onStateChange': function(event) {
+                        if (event.data === YT.PlayerState.PLAYING) {
+                            // Cookie-Blocker: Zwingt das Video beim allerersten Start auf die richtige Zeit
+                            if (!hasRoemerStarted) {
+                                hasRoemerStarted = true;
+                                if (Math.abs(playerRoemer.getCurrentTime() - 139) > 5) {
+                                    playerRoemer.seekTo(139);
+                                }
+                            }
+                            // Hard-Stop: Stoppt exakt bei der Endzeit
+                            if (window.roemerInterval) clearInterval(window.roemerInterval);
+                            window.roemerInterval = setInterval(function() {
+                                if (playerRoemer.getCurrentTime() >= 633) {
+                                    playerRoemer.pauseVideo();
+                                    clearInterval(window.roemerInterval);
+                                }
+                            }, 500);
+                        } else {
+                            if (window.roemerInterval) clearInterval(window.roemerInterval);
+                        }
+                    }
+                }
+            });
+        };
+
+        // 5. Event Listener
+        btnPrev.addEventListener('click', () => {
+            if (currentSlide > 0) { currentSlide--; updateUI(); }
+        });
+
+        btnNext.addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++; updateUI();
+            } else {
+                currentSlide = 0; updateUI(); // Neustart
+            }
+        });
+
+        ttsBtn.addEventListener('click', toggleTTS);
+
+        // Stimmen laden (Chrome/Edge Fix)
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+          speechSynthesis.onvoiceschanged = () => { console.log("Stimmen geladen"); };
+        }
+
+        // 6. Start
+        updateUI();
+
+    </script>
+</body>
+</html>
